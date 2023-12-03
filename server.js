@@ -1,13 +1,15 @@
+// Import necessary modules
 const express = require("express");
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
 
+// Set up the Express app and configure middleware
 const PORT = process.env.PORT || 3001;
 const app = express();
-
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// Create a connection to the MySQL database
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -15,13 +17,16 @@ const db = mysql.createConnection({
   database: "employees_db",
 });
 
+// Connect to the database and start the application
 db.connect((err) => {
   if (err) throw err;
   console.log(`Connected to the employees_db database.`);
   startApp();
 });
 
+// Function to start the main application logic
 function startApp() {
+  // Prompt the user with a list of actions to choose from
   inquirer
     .prompt([
       {
@@ -41,6 +46,7 @@ function startApp() {
       },
     ])
     .then((answer) => {
+      // Based on the user's choice, execute the corresponding function
       switch (answer.action) {
         case "View all departments":
           viewAllDepartments();
@@ -72,44 +78,48 @@ function startApp() {
 
         case "Exit":
           console.log("Exiting the application.");
-          db.end();
+          db.end(); // Close the database connection
           break;
 
         default:
           console.log("Invalid option. Please try again.");
-          startApp();
+          startApp(); // Restart the application if an invalid option is chosen
       }
     });
 }
 
+// Function to view all departments in the database
 function viewAllDepartments() {
   const query = "SELECT id, name FROM department";
   db.query(query, (err, results) => {
     if (err) throw err;
     console.table(results);
-    startApp();
+    startApp(); // Continue with the main application logic
   });
 }
 
+// Function to view all roles in the database
 function viewAllRoles() {
   const query = "SELECT id, title, salary, department_id FROM roles";
   db.query(query, (err, results) => {
     if (err) throw err;
     console.table(results);
-    startApp();
+    startApp(); // Continue with the main application logic
   });
 }
 
+// Function to view all employees in the database
 function viewAllEmployees() {
   const query =
     "SELECT id, first_name, last_name, title, department_id, salary, manager_id FROM employee";
   db.query(query, (err, results) => {
     if (err) throw err;
     console.table(results);
-    startApp();
+    startApp(); // Continue with the main application logic
   });
 }
 
+// Function to add a new department to the database
 function addDepartment() {
   inquirer
     .prompt([
@@ -124,11 +134,12 @@ function addDepartment() {
       db.query(query, [answer.departmentName], (err, results) => {
         if (err) throw err;
         console.log("Department added successfully!");
-        startApp();
+        startApp(); // Continue with the main application logic
       });
     });
 }
 
+// Function to add a new role to the database
 function addRole() {
   inquirer
     .prompt([
@@ -157,12 +168,13 @@ function addRole() {
         (err, results) => {
           if (err) throw err;
           console.log("Role added successfully!");
-          startApp();
+          startApp(); // Continue with the main application logic
         }
       );
     });
 }
 
+// Function to add a new employee to the database
 function addEmployee() {
   inquirer
     .prompt([
@@ -171,6 +183,8 @@ function addEmployee() {
         name: "firstName",
         message: "Enter the employee's first name:",
       },
+      // ... (previous code)
+
       {
         type: "input",
         name: "lastName",
@@ -196,12 +210,13 @@ function addEmployee() {
         (err, results) => {
           if (err) throw err;
           console.log("Employee added successfully!");
-          startApp();
+          startApp(); // Continue with the main application logic
         }
       );
     });
 }
 
+// Function to update the role of an existing employee
 function updateEmployeeRole() {
   // Fetch employee data to display for selection
   const query = "SELECT id, first_name, last_name FROM employee";
@@ -233,7 +248,7 @@ function updateEmployeeRole() {
           (err, results) => {
             if (err) throw err;
             console.log("Employee role updated successfully!");
-            startApp();
+            startApp(); // Continue with the main application logic
           }
         );
       });
