@@ -81,3 +81,7 @@ Submit a pull request
 ## License
 
 This project is licensed under the MIT License.
+
+## Walk through video
+
+https://drive.google.com/file/d/1wDpVGO97lwMK7K3kr2LHZltvsR1aDJj5/view

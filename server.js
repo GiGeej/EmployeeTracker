@@ -1,13 +1,15 @@
+// Import necessary modules
 const express = require("express");
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
 
+// Set up the Express app and configure middleware
 const PORT = process.env.PORT || 3001;
 const app = express();
-
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// Create a connection to the MySQL database
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -15,13 +17,16 @@ const db = mysql.createConnection({
   database: "employees_db",
 });
 
+// Connect to the database and start the application
 db.connect((err) => {
   if (err) throw err;
   console.log(`Connected to the employees_db database.`);
   startApp();
 });
 
+// Function to start the main application logic
 function startApp() {
+  // Prompt the user with a list of actions to choose from
   inquirer
     .prompt([
       {
@@ -41,6 +46,7 @@ function startApp() {
       },
     ])
     .then((answer) => {
+      // Based on the user's choice, execute the corresponding function
       switch (answer.action) {
         case "View all departments":
           viewAllDepartments();
@@ -72,7 +78,7 @@ function startApp() {
 
         case "Exit":
           console.log("Exiting the application.");
-          db.end();
+          db.end(); // Close the database connection
           break;
 
         default:
@@ -82,6 +88,7 @@ function startApp() {
     });
 }
 
+// Function to view all departments in the database
 function viewAllDepartments() {
   const query = "SELECT id, name FROM department";
   db.query(query, (err, results) => {
@@ -91,6 +98,7 @@ function viewAllDepartments() {
   });
 }
 
+// Function to view all roles in the database
 function viewAllRoles() {
   const query = "SELECT id, title, salary, department_id FROM roles";
   db.query(query, (err, results) => {
@@ -100,6 +108,7 @@ function viewAllRoles() {
   });
 }
 
+// Function to view all employees in the database
 function viewAllEmployees() {
   const query =
     "SELECT id, first_name, last_name, title, department_id, salary, manager_id FROM employee";
@@ -110,6 +119,7 @@ function viewAllEmployees() {
   });
 }
 
+// Function to add a new department to the database
 function addDepartment() {
   inquirer
     .prompt([
@@ -129,6 +139,7 @@ function addDepartment() {
     });
 }
 
+// Function to add a new role to the database
 function addRole() {
   inquirer
     .prompt([
@@ -163,6 +174,7 @@ function addRole() {
     });
 }
 
+// Function to add a new employee to the database
 function addEmployee() {
   inquirer
     .prompt([
@@ -171,6 +183,7 @@ function addEmployee() {
         name: "firstName",
         message: "Enter the employee's first name:",
       },
+
       {
         type: "input",
         name: "lastName",
@@ -202,6 +215,7 @@ function addEmployee() {
     });
 }
 
+// Function to update the role of an existing employee
 function updateEmployeeRole() {
   // Fetch employee data to display for selection
   const query = "SELECT id, first_name, last_name FROM employee";
@@ -240,5 +254,4 @@ function updateEmployeeRole() {
   });
 }
 
-// Exporting the startApp function to be used in other modules if needed
 module.exports = startApp;
